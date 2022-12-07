@@ -17,10 +17,14 @@ print(train.head())
 print(train.describe())
 print(train.info())
 
+train['Cabin_Deck'] = train['Cabin'].str.split('/').str[0]
+train['Cabin_Num'] = train['Cabin'].str.split('/').str[1]
+train['Cabin_Side'] = train['Cabin'].str.split('/').str[2]
+
 print(train.head)
 
-cat_v = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Cabin']
-num_v = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
+cat_v = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Cabin_Deck', 'Cabin_Side']
+num_v = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck', 'Cabin_Num']
 num_v_2 = ['Age']
 
 train[cat_v] = train[cat_v].astype('category')
@@ -52,7 +56,8 @@ train['HomePlanet'] = train['HomePlanet'].fillna('Earth')
 train['CryoSleep'] = train['CryoSleep'].fillna(False)
 train['Destination'] = train['Destination'].fillna('TRAPPIST-1e')
 train['VIP'] = train['VIP'].fillna(False)
-train['Cabin'] = train['Cabin'].fillna('G/734/S')
+train['Cabin_Deck'] = train['Cabin_Deck'].fillna('F')
+train['Cabin_Side'] = train['Cabin_Side'].fillna('S')
 
 for i in cat_v:
     le = LabelEncoder()
@@ -81,6 +86,10 @@ print(test.info())
 print(test.isna().sum())
 
 print(test.head)
+
+test['Cabin_Deck'] = test['Cabin'].str.split('/').str[0]
+test['Cabin_Num'] = test['Cabin'].str.split('/').str[1]
+test['Cabin_Side'] = test['Cabin'].str.split('/').str[2]
 
 test[cat_v] = test[cat_v].astype('category')
 
@@ -111,9 +120,8 @@ test['HomePlanet'] = test['HomePlanet'].fillna('Earth')
 test['CryoSleep'] = test['CryoSleep'].fillna(False)
 test['Destination'] = test['Destination'].fillna('TRAPPIST-1e')
 test['VIP'] = test['VIP'].fillna(False)
-test['Cabin'] = test['Cabin'].fillna('G/160/P')
-
-
+test['Cabin_Deck'] = test['Cabin_Deck'].fillna('F')
+test['Cabin_Side'] = test['Cabin_Side'].fillna('S')
 
 # Null num
 for p in num_v:
@@ -130,11 +138,13 @@ for i in cat_v:
     le.fit(test[i].astype(str))
     test[i] = le.transform(test[i].astype(str))
 
+test = test.drop('Cabin',axis = 1)
 print(test.head())
 
 # ML
 stand = StandardScaler()
 train[num_v_2] = stand.fit_transform(train[num_v_2])
+train = train.drop('Cabin', axis = 1)
 train = train.astype(int)
 
 X = train.drop('Transported', axis = 1)
