@@ -28,9 +28,6 @@ plt.show()
 sns.lineplot(data = train, x = 'YrSold', y = 'SalePrice')
 plt.show()
 
-# print(train.info())
-# print(train[cat_v].isna().sum())
-
 #fill 0
 train['Alley'] = train['Alley'].fillna(0)
 train['BsmtQual'] = train['BsmtQual'].fillna(0)
@@ -53,10 +50,17 @@ train['Electrical'] = train['Electrical'].fillna(train['Electrical'].mode().iloc
 
 
 # num
-# fill with mean
+# fill with ...
+sns.kdeplot(data = train, x = 'LotFrontage', fill = True)
+plt.show()
+sns.kdeplot(data = train, x = 'MasVnrArea', fill = True)
+plt.show()
+sns.kdeplot(data = train, x = 'GarageYrBlt', fill = True)
+plt.show()
+
 train['LotFrontage'] = train['LotFrontage'].fillna(train['LotFrontage'].mean())
-train['MasVnrArea'] = train['MasVnrArea'].fillna(train['MasVnrArea'].mean())
-train['GarageYrBlt'] = train['GarageYrBlt'].fillna(train['GarageYrBlt'].mean())
+train['MasVnrArea'] = train['MasVnrArea'].fillna(train['MasVnrArea'].median())
+train['GarageYrBlt'] = train['GarageYrBlt'].fillna(train['GarageYrBlt'].median())
 print(train.isna().sum())
 
 # LabelEncoder
@@ -99,15 +103,21 @@ test['MiscFeature'] = test['MiscFeature'].fillna(0)
 
 # for num_v
 # fill with mean
-test['LotFrontage'] = test['LotFrontage'].fillna(test['LotFrontage'].mean())
-test['MasVnrArea'] = test['MasVnrArea'].fillna(test['MasVnrArea'].mean())
-test['BsmtFinSF1'] = test['BsmtFinSF1'].fillna(test['BsmtFinSF1'].mean())
-test['BsmtFinSF2'] = test['BsmtFinSF2'].fillna(test['BsmtFinSF2'].mean())
+num_vt = ['LotFrontage','MasVnrArea','BsmtFinSF1','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','TotalBsmtSF','BsmtFullBath','BsmtHalfBath','GarageYrBlt','GarageCars','GarageArea']
+
+for i in num_vt:
+    sns.kdeplot(data = test, x = i, fill = True)
+    plt.show()
+
+test['LotFrontage'] = test['LotFrontage'].fillna(test['LotFrontage'].median())
+test['MasVnrArea'] = test['MasVnrArea'].fillna(test['MasVnrArea'].median())
+test['BsmtFinSF1'] = test['BsmtFinSF1'].fillna(test['BsmtFinSF1'].median())
+test['BsmtFinSF2'] = test['BsmtFinSF2'].fillna(test['BsmtFinSF2'].median())
 test['BsmtUnfSF'] = test['BsmtUnfSF'].fillna(test['BsmtUnfSF'].mean())
 test['TotalBsmtSF'] = test['TotalBsmtSF'].fillna(test['TotalBsmtSF'].mean())
-test['BsmtFullBath'] = test['BsmtFullBath'].fillna(test['BsmtFullBath'].mean())
-test['BsmtHalfBath'] = test['BsmtHalfBath'].fillna(test['BsmtHalfBath'].mean())
-test['GarageYrBlt'] = test['GarageYrBlt'].fillna(test['GarageYrBlt'].mean())
+test['BsmtFullBath'] = test['BsmtFullBath'].fillna(test['BsmtFullBath'].median())
+test['BsmtHalfBath'] = test['BsmtHalfBath'].fillna(test['BsmtHalfBath'].median())
+test['GarageYrBlt'] = test['GarageYrBlt'].fillna(test['GarageYrBlt'].median())
 test['GarageCars'] = test['GarageCars'].fillna(test['GarageCars'].mean())
 test['GarageArea'] = test['GarageArea'].fillna(test['GarageArea'].mean())
 
@@ -121,6 +131,7 @@ for i in cat_v:
 
 # Model Prediction
 from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score, KFold
@@ -131,19 +142,24 @@ X = train.drop(['SalePrice', 'Id'], axis = 1)
 y = train['SalePrice']
 
 kf = KFold(n_splits = 5, shuffle = True, random_state=10)
+
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.2, random_state=10)
 lr = LinearRegression()
 lr.fit(X_train, y_train)
 lr_cv = - cross_val_score(lr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
 print(lr_cv.mean())
 
-ypred = lr.predict(X_test)
-print(MSE(y_test, ypred))
+rr = RandomForestRegressor(max_depth = 6, random_state=10)
+rr.fit(X_train, y_train)
+rr_cv = - cross_val_score(rr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
+print(rr_cv.mean())
 
-ypredlr = lr.predict(test1)
-print(ypredlr)
+ypred1 = rr.predict(X_test)
 
-output = pd.DataFrame({'Id':test['Id'], 'SalePrice':ypredlr})
+ypredrr = rr.predict(test1)
+print(ypredrr)
+
+output = pd.DataFrame({'Id':test['Id'], 'SalePrice':ypredrr})
 output.to_csv('submission.csv', index = False)
 
 print(output.head())
