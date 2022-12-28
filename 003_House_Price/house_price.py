@@ -19,14 +19,14 @@ cat_v = ['MSSubClass', 'MSZoning', 'Street', 'Alley', 'LotShape', 'LandContour',
          'Foundation','BsmtQual','BsmtCond','BsmtExposure','BsmtFinType1','BsmtFinType2','Heating','HeatingQC','CentralAir','Electrical','KitchenQual','Functional',
          'FireplaceQu','GarageType','GarageFinish','GarageQual','GarageCond', 'PavedDrive','PoolQC','Fence','MiscFeature','SaleType','SaleCondition']
 
-for i in cat_v:
-    sns.countplot(data = train, x = i, palette = 'Greens', fill = True)
-    plt.show()
+# for i in cat_v:
+#     sns.countplot(data = train, x = i, palette = 'Greens', fill = True)
+#     plt.show()
 
-sns.histplot(data = train, x = 'SalePrice', kde= True)
-plt.show()
-sns.lineplot(data = train, x = 'YrSold', y = 'SalePrice')
-plt.show()
+# sns.histplot(data = train, x = 'SalePrice', kde= True)
+# plt.show()
+# sns.lineplot(data = train, x = 'YrSold', y = 'SalePrice')
+# plt.show()
 
 #fill 0
 train['Alley'] = train['Alley'].fillna(0)
@@ -51,12 +51,12 @@ train['Electrical'] = train['Electrical'].fillna(train['Electrical'].mode().iloc
 
 # num
 # fill with ...
-sns.kdeplot(data = train, x = 'LotFrontage', fill = True)
-plt.show()
-sns.kdeplot(data = train, x = 'MasVnrArea', fill = True)
-plt.show()
-sns.kdeplot(data = train, x = 'GarageYrBlt', fill = True)
-plt.show()
+# sns.kdeplot(data = train, x = 'LotFrontage', fill = True)
+# plt.show()
+# sns.kdeplot(data = train, x = 'MasVnrArea', fill = True)
+# plt.show()
+# sns.kdeplot(data = train, x = 'GarageYrBlt', fill = True)
+# plt.show()
 
 train['LotFrontage'] = train['LotFrontage'].fillna(train['LotFrontage'].mean())
 train['MasVnrArea'] = train['MasVnrArea'].fillna(train['MasVnrArea'].median())
@@ -105,9 +105,9 @@ test['MiscFeature'] = test['MiscFeature'].fillna(0)
 # fill with mean
 num_vt = ['LotFrontage','MasVnrArea','BsmtFinSF1','BsmtFinSF2','BsmtUnfSF','TotalBsmtSF','TotalBsmtSF','BsmtFullBath','BsmtHalfBath','GarageYrBlt','GarageCars','GarageArea']
 
-for i in num_vt:
-    sns.kdeplot(data = test, x = i, fill = True)
-    plt.show()
+# for i in num_vt:
+#     sns.kdeplot(data = test, x = i, fill = True)
+#     plt.show()
 
 test['LotFrontage'] = test['LotFrontage'].fillna(test['LotFrontage'].median())
 test['MasVnrArea'] = test['MasVnrArea'].fillna(test['MasVnrArea'].median())
@@ -143,13 +143,13 @@ y = train['SalePrice']
 
 kf = KFold(n_splits = 5, shuffle = True, random_state=10)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.2, random_state=10)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.25, random_state=10)
 lr = LinearRegression()
 lr.fit(X_train, y_train)
 lr_cv = - cross_val_score(lr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
 print(lr_cv.mean())
 
-rr = RandomForestRegressor(max_depth = 6, random_state=10)
+rr = RandomForestRegressor(max_depth = 10, random_state=10)
 rr.fit(X_train, y_train)
 rr_cv = - cross_val_score(rr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
 print(rr_cv.mean())
