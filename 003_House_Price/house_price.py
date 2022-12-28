@@ -149,7 +149,7 @@ lr.fit(X_train, y_train)
 lr_cv = - cross_val_score(lr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
 print(lr_cv.mean())
 
-rr = RandomForestRegressor(max_depth = 10, random_state=10)
+rr = RandomForestRegressor(max_depth = 30, random_state=10)
 rr.fit(X_train, y_train)
 rr_cv = - cross_val_score(rr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
 print(rr_cv.mean())
