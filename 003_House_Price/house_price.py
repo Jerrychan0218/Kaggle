@@ -133,6 +133,7 @@ for i in cat_v:
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
+from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score, KFold
 from sklearn.metrics import mean_squared_error as MSE
@@ -145,21 +146,27 @@ kf = KFold(n_splits = 5, shuffle = True, random_state=10)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size= 0.25, random_state=10)
 lr = LinearRegression()
-lr.fit(X_train, y_train)
-lr_cv = - cross_val_score(lr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
-print(lr_cv.mean())
+lrfit = lr.fit(X_train, y_train)
+print(lrfit.score(X_train, y_train))
 
 rr = RandomForestRegressor(max_depth = 30, random_state=10)
-rr.fit(X_train, y_train)
-rr_cv = - cross_val_score(rr, X_train, y_train, cv = kf, scoring = 'neg_mean_squared_error')
-print(rr_cv.mean())
+rrfit = rr.fit(X_train, y_train)
+print(rrfit.score(X_train, y_train))
+
+xb = XGBRegressor(random_state = 10)
+xbfit = xb.fit(X_train, y_train)
+print(xbfit.score(X_train, y_train))
 
 ypred1 = rr.predict(X_test)
+ypred2 = xb.predict(X_test)
 
 ypredrr = rr.predict(test1)
 print(ypredrr)
 
-output = pd.DataFrame({'Id':test['Id'], 'SalePrice':ypredrr})
+ypredxb = xb.predict(test1)
+print(ypredxb)
+
+output = pd.DataFrame({'Id':test['Id'], 'SalePrice':ypredxb})
 output.to_csv('submission.csv', index = False)
 
 print(output.head())
