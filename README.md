@@ -2,7 +2,7 @@
 
 主要針對Regression、Classifier Machine Learning 進行實際操作
 
-分別是經典的競賽 Titanic 以及房價預測，另外還有進階版的Space Titanic
+目前進行告一段落的分別是經典的競賽 Titanic 以及房價預測，另外還有進階版的Space Titanic，之後會再優化這些競賽的code
 
 # 經典以及進階的Titanic 競賽
 兩個競賽都是以Classifier Machine Learning 為主軸的競賽
